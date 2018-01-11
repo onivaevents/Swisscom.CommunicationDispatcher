@@ -1,0 +1,40 @@
+<?php
+namespace Swisscom\CommunicationDispatcher\Channel;
+
+/*
+ * This file is part of the Swisscom.CommunicationDispatcher package.
+ */
+
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
+use Swisscom\CommunicationDispatcher\Domain\Model\Notification;
+use Swisscom\CommunicationDispatcher\Domain\Repository\NotificationRepository;
+use Swisscom\CommunicationDispatcher\Exception;
+use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Party\Domain\Model\Person;
+
+class NotificationChannel implements ChannelInterface
+{
+
+    /**
+     * @Flow\Inject
+     * @var NotificationRepository
+     */
+    protected $notificationRepository;
+
+    /**
+     * @param Recipient $recipient
+     * @param string $subject
+     * @param string $text
+     * @param array $attachedResources
+     * @throws Exception
+     */
+    public function send(Recipient $recipient, $subject, $text, $attachedResources = array())
+    {
+        if ($recipient->getPerson() instanceof Person) {
+            $newNotification = new Notification($recipient->getPerson(), $subject, $text);
+            $this->notificationRepository->add($newNotification);
+        } else {
+            throw new Exception('Notification expects the recipient to have a Person.', 1513086601);
+        }
+    }
+}

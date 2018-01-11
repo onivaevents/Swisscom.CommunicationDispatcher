@@ -1,0 +1,23 @@
+{
+    "description": "Dispatcher to handle e-mail and instant notifications.",
+    "type": "neos-package",
+    "keywords": [
+        "communication", "mail", "email", "notification", "message", "alert", "Neos", "Flow"
+    ],
+    "require": {
+        "typo3/flow": "*",
+        "typo3/media": "*",
+        "typo3/swiftmailer": "5.3.*"
+    },
+    "name": "swisscom/communicationdispatcher",
+    "autoload": {
+        "psr-0": {
+            "Swisscom\\CommunicationDispatcher": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Swisscom.CommunicationDispatcher"
+        }
+    }
+}

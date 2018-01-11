@@ -1,0 +1,15 @@
+Swisscom:
+  CommunicationDispatcher:
+    renderingErrorMessage: 'Template rendering failed'
+    partialRootPath: null
+
+    log:
+      logger:
+        backend: TYPO3\Flow\Log\Backend\FileBackend
+        backendOptions:
+          logFileURL: %FLOW_PATH_DATA%Logs/CommunicationDispatcher.log
+          createParentDirectories: TRUE
+          severityThreshold: %LOG_INFO%
+          maximumLogFileSize: 10485760
+          logFilesToKeep: 1
+          logIpAddress: TRUE
