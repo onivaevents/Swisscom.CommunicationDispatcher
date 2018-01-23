@@ -2,6 +2,7 @@ Swisscom:
   CommunicationDispatcher:
     renderingErrorMessage: 'Template rendering failed'
     partialRootPath: null
+    templateSourceNamespaces: ~
 
     log:
       logger:

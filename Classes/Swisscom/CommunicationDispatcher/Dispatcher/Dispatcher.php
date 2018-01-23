@@ -63,6 +63,9 @@ class Dispatcher implements DispatcherInterface
      */
     protected function render($templateSource, $params = array())
     {
+        foreach ($this->settings['templateSourceNamespaces'] as $namespaceKey => $namespaceValue) {
+            $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '} ' . $templateSource;
+        }
         $template = new \TYPO3\Fluid\View\StandaloneView();
         $template->setPartialRootPath($this->settings['partialRootPath']);
         $template->setTemplateSource($templateSource);
