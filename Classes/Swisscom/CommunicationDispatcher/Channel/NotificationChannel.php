@@ -31,10 +31,23 @@ class NotificationChannel implements ChannelInterface
     public function send(Recipient $recipient, $subject, $text, $attachedResources = array())
     {
         if ($recipient->getPerson() instanceof Person) {
-            $newNotification = new Notification($recipient->getPerson(), $subject, $text);
+            $newNotification = $this->createNotification($recipient, $subject, $text);
             $this->notificationRepository->add($newNotification);
         } else {
             throw new Exception('Notification expects the recipient to have a Person.', 1513086601);
         }
+    }
+
+    /**
+     * @param Recipient $recipient
+     * @param string $subject
+     * @param string $text
+     * @return Notification
+     */
+    protected function createNotification(Recipient $recipient, $subject, $text)
+    {
+        $newNotification = new Notification($recipient->getPerson(), $subject, $text);
+
+        return $newNotification;
     }
 }
