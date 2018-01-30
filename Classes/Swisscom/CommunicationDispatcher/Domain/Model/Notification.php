@@ -11,6 +11,7 @@ use TYPO3\Party\Domain\Model\Person;
 
 /**
  * @Flow\Entity
+ * @ORM\InheritanceType("JOINED")
  */
 class Notification
 {
