@@ -36,7 +36,7 @@ class Notification
     /**
      * @var boolean
      */
-    protected $isRead = false;
+    protected $notified = false;
 
     /**
      * @var \DateTime
@@ -52,6 +52,7 @@ class Notification
     public function __construct(Person $person, $subject, $text)
     {
         $this->timestamp = new \DateTime();
+        $this->person = $person;
         $this->subject = $subject;
         $this->text = $text;
     }
@@ -83,17 +84,17 @@ class Notification
     /**
      * @return bool
      */
-    public function isIsRead()
+    public function isNotified()
     {
-        return $this->isRead;
+        return $this->notified;
     }
 
     /**
-     * @param bool $isRead
+     * @param bool $notified
      */
-    public function setIsRead($isRead)
+    public function setNotified($notified)
     {
-        $this->isRead = $isRead;
+        $this->notified = $notified;
     }
 
     /**
