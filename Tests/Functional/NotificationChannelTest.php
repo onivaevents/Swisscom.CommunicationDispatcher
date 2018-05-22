@@ -12,6 +12,7 @@ use TYPO3\Flow\Persistence\Doctrine\PersistenceManager;
 use TYPO3\Flow\Tests\FunctionalTestCase;
 use TYPO3\Party\Domain\Model\Person;
 use TYPO3\Party\Domain\Model\PersonName;
+use TYPO3\Party\Domain\Repository\PartyRepository;
 
 /**
  * Class NotificationChannelTest
@@ -26,6 +27,11 @@ class NotificationChannelTest extends FunctionalTestCase
     protected $notificationChannel;
 
     /**
+     * @var PartyRepository
+     */
+    protected $partyRepository;
+
+    /**
      * @return void
      */
     public function setUp()
@@ -34,6 +40,7 @@ class NotificationChannelTest extends FunctionalTestCase
 
         $this->notificationChannel = $this->objectManager->get(NotificationChannel::class);
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $this->partyRepository = $this->objectManager->get(PartyRepository::class);
     }
 
     /**
@@ -44,6 +51,7 @@ class NotificationChannelTest extends FunctionalTestCase
         $personName = new PersonName('Foo', 'Bar');
         $person = new Person();
         $person->setName($personName);
+        $this->partyRepository->add($person);
         $recipient = new Recipient($person);
         $this->notificationChannel->send($recipient, 'Subject', 'Text');
 
