@@ -25,6 +25,12 @@ class Dispatcher implements DispatcherInterface
     protected $channelInterface;
 
     /**
+     * @var \TYPO3\Fluid\View\StandaloneView
+     * @Flow\Inject
+     */
+    protected $view;
+
+    /**
      * @param ChannelInterface $channelInterface
      * @return void
      */
@@ -66,15 +72,14 @@ class Dispatcher implements DispatcherInterface
         foreach ($this->settings['templateSourceNamespaces'] as $namespaceKey => $namespaceValue) {
             $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '} ' . $templateSource;
         }
-        $template = new \TYPO3\Fluid\View\StandaloneView();
-        $template->setPartialRootPath($this->settings['partialRootPath']);
-        $template->setTemplateSource($templateSource);
-        $template->assign('settings', $this->settings);
+        $this->view->setPartialRootPath($this->settings['partialRootPath']);
+        $this->view->setTemplateSource($templateSource);
+        $this->view->assign('settings', $this->settings);
 
         foreach ($params as $key => $value) {
-            $template->assign($key, $value);
+            $this->view->assign($key, $value);
         }
 
-        return $template->render();
+        return $this->view->render();
     }
 }

@@ -7,13 +7,14 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
  */
 
 use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
-use TYPO3\Flow\Tests\UnitTestCase;
+use TYPO3\Flow\Tests\FunctionalTestCase;
+use TYPO3\Fluid\View\StandaloneView;
 
 /**
  * Class DispatcherTest
  * @package Swisscom\CommunicationDispatcher\Tests\Functional
  */
-class DispatcherTest extends UnitTestCase
+class DispatcherTest extends FunctionalTestCase
 {
 
     /**
@@ -29,6 +30,9 @@ class DispatcherTest extends UnitTestCase
         parent::setUp();
 
         $this->dispatcher = $this->getAccessibleMock(Dispatcher::class, array('dummy'));
+        $view = $this->objectManager->get(StandaloneView::class);
+        $this->inject($this->dispatcher, 'settings', array('templateSourceNamespaces' => array(), 'partialRootPath' => null));
+        $this->inject($this->dispatcher, 'view', $view);
     }
 
     /**
