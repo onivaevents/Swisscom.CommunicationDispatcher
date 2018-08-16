@@ -87,10 +87,11 @@ class EmailChannel implements ChannelInterface
             $mail->addPart($text, 'text/html', 'utf-8');
             /** @var \TYPO3\Flow\Resource\Resource $resource */
             foreach ($attachedResources as $resource) {
-                if ($resource->getStream() !== false) {
+                $stream = $resource->getStream();
+                if ($stream !== false) {
                     /* Resource createTemporaryLocalCopy() does not work as the file needs to be stored until flushing
                     the queue. Create a Swift Attachment to let Swiftmailer take care of it. */
-                    $content = fread($resource->getStream(), $resource->getFileSize());
+                    $content = fread($stream, $resource->getFileSize());
                     if ($content !== false) {
                         $swiftAttachment = \Swift_Attachment::newInstance($content, $resource->getFilename(),
                             $resource->getMediaType());
