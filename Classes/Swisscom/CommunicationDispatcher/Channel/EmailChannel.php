@@ -77,7 +77,9 @@ class EmailChannel implements ChannelInterface
         if (! empty($toEmail)) {
             $mail = new \Swift_Message();
             $mail->setFrom($this->from);
-            $mail->setReplyTo($this->replyTo);
+            if (!empty($this->replyTo)) {
+                $mail->setReplyTo($this->replyTo);
+            }
             $mail->setTo($toEmail, $toName);
             if (!empty($this->cc)) {
                 $mail->setCc($this->cc);
