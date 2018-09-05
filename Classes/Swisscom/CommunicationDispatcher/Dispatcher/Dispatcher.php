@@ -74,8 +74,8 @@ class Dispatcher implements DispatcherInterface
         }
         $this->view->setPartialRootPath($this->settings['partialRootPath']);
         $this->view->setTemplateSource($templateSource);
-        $this->view->assign('settings', $this->settings);
 
+        $params = array_merge($this->settings['templateViewStaticParameters'], $params);
         foreach ($params as $key => $value) {
             $this->view->assign($key, $value);
         }

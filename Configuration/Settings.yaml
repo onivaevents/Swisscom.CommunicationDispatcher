@@ -3,6 +3,7 @@ Swisscom:
     renderingErrorMessage: 'Template rendering failed'
     partialRootPath: null
     templateSourceNamespaces: ~
+    templateViewStaticParameters: ~
 
     log:
       logger:
