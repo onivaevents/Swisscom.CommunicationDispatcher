@@ -1,5 +1,12 @@
 Swisscom:
   CommunicationDispatcher:
+    dispatcherConfigurations:
+      emailChannel:
+        objectName: '\Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher'
+        channelObjectName: '\Swisscom\CommunicationDispatcher\Channel\EmailChannel'
+      notificationChannel:
+        objectName: '\Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher'
+        channelObjectName: '\Swisscom\CommunicationDispatcher\Channel\NotificationChannel'
     renderingErrorMessage: 'Template rendering failed'
     partialRootPath: null
     templateSourceNamespaces: ~

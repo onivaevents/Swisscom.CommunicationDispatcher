@@ -15,16 +15,26 @@ use TYPO3\Flow\Annotations as Flow;
  */
 class DispatcherFactory
 {
+
     /**
-     * @param string $dispatcherObjectName
-     * @param string $channelObjectName
+     * @Flow\InjectConfiguration(path="dispatcherConfigurations")
+     * @var array
+     */
+    protected $dispatcherConfigurations;
+
+    /**
+     * @param string $identifier
      * @param array $channelOptions
      * @return DispatcherInterface
      */
-    public function create($dispatcherObjectName, $channelObjectName, array $channelOptions = [])
+    public function create($identifier, array $channelOptions = [])
     {
+        $configuration = $this->dispatcherConfigurations[$identifier];
+        $objectName = $configuration['objectName'];
+        $channelObjectName = $configuration['channelObjectName'];
+
         /** @var DispatcherInterface $dispatcher */
-        $dispatcher = new $dispatcherObjectName();
+        $dispatcher = new $objectName();
         /** @var ChannelInterface $channel */
         $channel = new $channelObjectName($channelOptions);
         $dispatcher->setChannelInterface($channel);
