@@ -9,8 +9,8 @@ Swisscom:
         channelObjectName: '\Swisscom\CommunicationDispatcher\Channel\NotificationChannel'
     renderingErrorMessage: 'Template rendering failed'
     partialRootPath: null
-    templateSourceNamespaces: ~
-    templateViewStaticParameters: ~
+    templateSourceNamespaces: []
+    templateViewStaticParameters: []
 
     log:
       logger:

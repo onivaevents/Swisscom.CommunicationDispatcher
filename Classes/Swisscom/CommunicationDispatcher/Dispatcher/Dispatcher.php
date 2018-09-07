@@ -70,7 +70,7 @@ class Dispatcher implements DispatcherInterface
     protected function render($templateSource, $params = array())
     {
         foreach ($this->settings['templateSourceNamespaces'] as $namespaceKey => $namespaceValue) {
-            $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '} ' . $templateSource;
+            $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '}' . $templateSource;
         }
         $this->view->setPartialRootPath($this->settings['partialRootPath']);
         $this->view->setTemplateSource($templateSource);

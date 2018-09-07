@@ -7,6 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
  */
 
 use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
+use TYPO3\Flow\Configuration\ConfigurationManager;
 use TYPO3\Flow\Tests\FunctionalTestCase;
 use TYPO3\Fluid\View\StandaloneView;
 
@@ -29,9 +30,11 @@ class DispatcherTest extends FunctionalTestCase
     {
         parent::setUp();
 
+        $configurationManager = $this->objectManager->get('TYPO3\Flow\Configuration\ConfigurationManager');
+        $settings = $configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'Swisscom.CommunicationDispatcher');
         $this->dispatcher = $this->getAccessibleMock(Dispatcher::class, array('dummy'));
         $view = $this->objectManager->get(StandaloneView::class);
-        $this->inject($this->dispatcher, 'settings', array('templateSourceNamespaces' => array(), 'partialRootPath' => null));
+        $this->inject($this->dispatcher, 'settings', $settings);
         $this->inject($this->dispatcher, 'view', $view);
     }
 
