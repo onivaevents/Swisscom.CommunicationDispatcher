@@ -50,7 +50,7 @@ class Dispatcher implements DispatcherInterface
     public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $attachedResources = array())
     {
         try {
-            $renderedSubject = $this->render($subject, $params);
+            $renderedSubject = $this->settings['subjectPrefix'] . $this->render($subject, $params);
         } catch (\Exception $exception) {
             $renderedSubject = $this->settings['renderingErrorMessage'];
         }
