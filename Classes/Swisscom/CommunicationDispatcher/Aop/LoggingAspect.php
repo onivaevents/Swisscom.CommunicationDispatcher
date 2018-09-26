@@ -25,7 +25,7 @@ class LoggingAspect
 
     /**
      * Logs dispatcher calls
-     * @Flow\After("within(Swisscom\CommunicationDispatcher\Dispatcher\DispatcherInterface) && method(.*->dispatch())")
+     * @Flow\After("within(Swisscom\CommunicationDispatcher\Channel\ChannelInterface) && method(.*->send())")
      * @param JoinPointInterface $joinPoint The current joinpoint
      * @return void
      */
@@ -34,11 +34,18 @@ class LoggingAspect
         /** @var Recipient $recipient */
         $recipient = $joinPoint->getMethodArgument('recipient');
         $subject = $joinPoint->getMethodArgument('subject');
+        $className = $joinPoint->getClassName();
+
+        if (empty($subject)) {
+            $message = $className . ': Dispatching message to ' . $recipient->getName();
+        } else {
+            $message = $className . ': Dispatching message "' . $subject . '" to ' . $recipient->getName();
+        }
 
         if ($joinPoint->hasException()) {
-            $this->logger->log('Dispatching message "' . $subject . '" to ' . $recipient->getName() . ' failed', LOG_ERR);
+            $this->logger->log($message . ' failed', LOG_ERR);
         } else {
-            $this->logger->log('Dispatching message "' . $subject . '" to ' . $recipient->getName() . ' successful', LOG_INFO);
+            $this->logger->log($message . ' successful', LOG_INFO);
         }
     }
 }
