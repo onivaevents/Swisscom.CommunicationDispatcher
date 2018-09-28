@@ -49,8 +49,11 @@ class Dispatcher implements DispatcherInterface
      */
     public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $attachedResources = array())
     {
+        if (! empty($this->settings['subjectPrefix'])) {
+            $subject = $this->settings['subjectPrefix'] . ' ' . $subject;
+        }
         try {
-            $renderedSubject = $this->settings['subjectPrefix'] . $this->render($subject, $params);
+            $renderedSubject = $this->render($subject, $params);
         } catch (\Exception $exception) {
             $renderedSubject = $this->settings['renderingErrorMessage'];
         }
