@@ -62,6 +62,12 @@ class Dispatcher implements DispatcherInterface
         } catch (\Exception $exception) {
             $renderedText = $this->settings['renderingErrorMessage'];
         }
+        if (! is_string($renderedSubject)) {
+            $renderedSubject = '';
+        }
+        if (! is_string($renderedText)) {
+            $renderedText = '';
+        }
         $this->channelInterface->send($recipient, $renderedSubject, $renderedText, $attachedResources);
     }
 
