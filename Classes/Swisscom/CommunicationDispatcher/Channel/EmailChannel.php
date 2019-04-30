@@ -8,10 +8,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Exception;
-use TYPO3\Flow\Resource\Resource;
 use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Media\Domain\Model\Asset;
 
 /**
  * @Flow\Scope("prototype")
@@ -85,7 +82,7 @@ class EmailChannel implements ChannelInterface
                 $mail->setCc($this->cc);
             }
             $mail->setSubject(htmlspecialchars_decode($subject));
-            $text = $this->embedImageReplacement($text, $mail);
+            $text = $this->embedResources($text, $mail);
             $mail->addPart($text, 'text/html', 'utf-8');
             /** @var \TYPO3\Flow\Resource\Resource $resource */
             foreach ($attachedResources as $resource) {
@@ -110,17 +107,24 @@ class EmailChannel implements ChannelInterface
     }
 
     /**
+     * Embed images. I.e:
+     * <img height="40px" src="###IMAGE:'{template.logo}'###" alt="Logo"/>
+     *
      * @param $html
      * @param \Swift_Message $mail
      *
      * @return string $html
      */
-    private function embedImageReplacement($html, &$mail)
+    private function embedResources($html, &$mail)
     {
-        $callback = function ($matches) use ($mail) {
-            return $this->imageReplaceCallback($matches, $mail);
-        };
-        return preg_replace_callback('/###IMAGE:(.+?)###/', $callback, $html);
+        $html = preg_replace_callback('/###IMAGE:(.+?)###/', function ($matches) use ($mail) {
+            return $this->embedImageResourceCallback($matches, $mail);
+        }, $html);
+        $html = preg_replace_callback('/###PLAIN:(.+?)###/', function ($matches) use ($mail) {
+            return $this->embedPlainResourceCallback($matches);
+        }, $html);
+
+        return $html;
     }
 
     /**
@@ -129,23 +133,36 @@ class EmailChannel implements ChannelInterface
      *
      * @return string
      */
-    private function imageReplaceCallback($matches, &$mail)
+    private function embedImageResourceCallback($matches, &$mail)
     {
+        $cid = '';
         if (isset($matches[1])) {
-            $asset = $this->assetRepository->findByFilename($matches[1]);
-            if ($asset instanceof Asset && $asset->getResource() instanceof Resource) {
-                try {
-                    $imageSource = $this->resourceManager->getPublicPersistentResourceUri($asset->getResource());
-                    if (! empty($imageSource)) {
-                        // Attach the message with a "cid"
-                        $cid = $mail->embed(\Swift_Image::fromPath($imageSource));
-                        return '<img src="' . $cid . '" alt="' . $asset->getTitle() . '" />';
-                    }
-                } catch (Exception $e) {
-                    return '';
-                }
+            $source = trim($matches[1], '\'');
+            try {
+                $cid = $mail->embed(\Swift_Image::fromPath($source));
+            } catch (\Exception $e) {
+                // Nothing to do here
             }
         }
-        return '';
+        return $cid;
+    }
+
+    /**
+     * @param array $matches
+     *
+     * @return string
+     */
+    private function embedPlainResourceCallback($matches)
+    {
+        $plain = '';
+        if (isset($matches[1])) {
+            $source = trim($matches[1], '\'');
+            try {
+                $plain = file_get_contents($source);
+            } catch (\Exception $e) {
+                // Nothing to do here
+            }
+        }
+        return $plain;
     }
 }
