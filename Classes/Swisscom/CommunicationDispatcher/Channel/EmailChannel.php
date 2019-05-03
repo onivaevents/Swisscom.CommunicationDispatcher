@@ -82,8 +82,10 @@ class EmailChannel implements ChannelInterface
                 $mail->setCc($this->cc);
             }
             $mail->setSubject(htmlspecialchars_decode($subject));
+            $plaintext = preg_replace(array('/\s{2,}/', '/[\t]/', '/###IMAGE:(.+?)###/', '/###PLAIN:(.+?)###/'), ' ', strip_tags($text));
             $text = $this->embedResources($text, $mail);
-            $mail->addPart($text, 'text/html', 'utf-8');
+            $mail->setBody($text, 'text/html', 'utf-8');
+            $mail->addPart($plaintext, 'text/plain', 'utf-8');
             /** @var \TYPO3\Flow\Resource\Resource $resource */
             foreach ($attachedResources as $resource) {
                 $stream = $resource->getStream();
