@@ -37,9 +37,9 @@ class LoggingAspect
         $className = $joinPoint->getClassName();
 
         if (empty($subject)) {
-            $message = $className . ': Dispatching message to ' . $recipient->getName();
+            $message = $className . ': Dispatching message to ' . $recipient->getEmail();
         } else {
-            $message = $className . ': Dispatching message "' . $subject . '" to ' . $recipient->getName();
+            $message = $className . ': Dispatching message "' . $subject . '" to ' . $recipient->getEmail();
         }
 
         if ($joinPoint->hasException()) {
