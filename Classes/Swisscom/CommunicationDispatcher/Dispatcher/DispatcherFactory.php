@@ -32,11 +32,12 @@ class DispatcherFactory
         $configuration = $this->dispatcherConfigurations[$identifier];
         $objectName = $configuration['objectName'];
         $channelObjectName = $configuration['channelObjectName'];
+        $options = array_merge($configuration['channelOptions'], $channelOptions);
 
         /** @var DispatcherInterface $dispatcher */
         $dispatcher = new $objectName();
         /** @var ChannelInterface $channel */
-        $channel = new $channelObjectName($channelOptions);
+        $channel = new $channelObjectName($options);
         $dispatcher->setChannelInterface($channel);
 
         return $dispatcher;
