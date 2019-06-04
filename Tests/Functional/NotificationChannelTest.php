@@ -8,11 +8,11 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
 
 use Swisscom\CommunicationDispatcher\Channel\NotificationChannel;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use TYPO3\Flow\Persistence\Doctrine\PersistenceManager;
-use TYPO3\Flow\Tests\FunctionalTestCase;
-use TYPO3\Party\Domain\Model\Person;
-use TYPO3\Party\Domain\Model\PersonName;
-use TYPO3\Party\Domain\Repository\PartyRepository;
+use Neos\Flow\Persistence\Doctrine\PersistenceManager;
+use Neos\Flow\Tests\FunctionalTestCase;
+use Neos\Party\Domain\Model\Person;
+use Neos\Party\Domain\Model\PersonName;
+use Neos\Party\Domain\Repository\PartyRepository;
 
 /**
  * Class NotificationChannelTest

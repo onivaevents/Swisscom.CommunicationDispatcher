@@ -8,6 +8,6 @@ namespace Swisscom\CommunicationDispatcher;
 /**
  * Generic communication dispatcher exception
  */
-class Exception extends \TYPO3\Flow\Exception
+class Exception extends \Neos\Flow\Exception
 {
 }

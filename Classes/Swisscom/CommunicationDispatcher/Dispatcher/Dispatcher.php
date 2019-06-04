@@ -8,7 +8,7 @@ namespace Swisscom\CommunicationDispatcher\Dispatcher;
 
 use Swisscom\CommunicationDispatcher\Channel\ChannelInterface;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use TYPO3\Flow\Annotations as Flow;
+use Neos\Flow\Annotations as Flow;
 
 class Dispatcher implements DispatcherInterface
 {
@@ -25,7 +25,7 @@ class Dispatcher implements DispatcherInterface
     protected $channelInterface;
 
     /**
-     * @var \TYPO3\Fluid\View\StandaloneView
+     * @var \Neos\FluidAdaptor\View\StandaloneView
      * @Flow\Inject
      */
     protected $view;

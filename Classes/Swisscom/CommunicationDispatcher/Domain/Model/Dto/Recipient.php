@@ -5,8 +5,8 @@ namespace Swisscom\CommunicationDispatcher\Domain\Model\Dto;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use TYPO3\Party\Domain\Model\ElectronicAddress;
-use TYPO3\Party\Domain\Model\Person;
+use Neos\Party\Domain\Model\ElectronicAddress;
+use Neos\Party\Domain\Model\Person;
 
 /**
  * A DTO for storing recipient information

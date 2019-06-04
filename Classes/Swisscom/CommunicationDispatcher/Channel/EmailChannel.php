@@ -7,8 +7,8 @@ namespace Swisscom\CommunicationDispatcher\Channel;
 
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Resource\ResourceManager;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\ResourceManagement\ResourceManager;
 
 /**
  * @Flow\Scope("prototype")
@@ -86,7 +86,7 @@ class EmailChannel implements ChannelInterface
             $text = $this->embedResources($text, $mail);
             $mail->setBody($text, 'text/html', 'utf-8');
             $mail->addPart($plaintext, 'text/plain', 'utf-8');
-            /** @var \TYPO3\Flow\Resource\Resource $resource */
+            /** @var \Neos\Flow\ResourceManagement\PersistentResource $resource */
             foreach ($attachedResources as $resource) {
                 $stream = $resource->getStream();
                 if ($stream !== false) {

@@ -5,9 +5,9 @@ namespace Swisscom\CommunicationDispatcher\Domain\Repository;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Media\Domain\Model\Asset;
-use TYPO3\Flow\Persistence\Repository;
+use Neos\Flow\Annotations as Flow;
+use Neos\Media\Domain\Model\Asset;
+use Neos\Flow\Persistence\Repository;
 
 /**
  * @Flow\Scope("singleton")

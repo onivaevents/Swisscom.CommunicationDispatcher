@@ -7,9 +7,9 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
  */
 
 use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
-use TYPO3\Flow\Configuration\ConfigurationManager;
-use TYPO3\Flow\Tests\FunctionalTestCase;
-use TYPO3\Fluid\View\StandaloneView;
+use Neos\Flow\Configuration\ConfigurationManager;
+use Neos\Flow\Tests\FunctionalTestCase;
+use Neos\FluidAdaptor\View\StandaloneView;
 
 /**
  * Class DispatcherTest
@@ -30,7 +30,7 @@ class DispatcherTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $configurationManager = $this->objectManager->get('TYPO3\Flow\Configuration\ConfigurationManager');
+        $configurationManager = $this->objectManager->get('Neos\Flow\Configuration\ConfigurationManager');
         $settings = $configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'Swisscom.CommunicationDispatcher');
         $this->dispatcher = $this->getAccessibleMock(Dispatcher::class, array('dummy'));
         $view = $this->objectManager->get(StandaloneView::class);

@@ -9,8 +9,8 @@ use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Model\Notification;
 use Swisscom\CommunicationDispatcher\Domain\Repository\NotificationRepository;
 use Swisscom\CommunicationDispatcher\Exception;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Party\Domain\Model\Person;
+use Neos\Flow\Annotations as Flow;
+use Neos\Party\Domain\Model\Person;
 
 class NotificationChannel implements ChannelInterface
 {

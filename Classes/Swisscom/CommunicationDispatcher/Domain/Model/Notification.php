@@ -5,9 +5,9 @@ namespace Swisscom\CommunicationDispatcher\Domain\Model;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use TYPO3\Flow\Annotations as Flow;
+use Neos\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
-use TYPO3\Party\Domain\Model\Person;
+use Neos\Party\Domain\Model\Person;
 
 /**
  * @Flow\Entity

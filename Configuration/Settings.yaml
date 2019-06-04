@@ -17,7 +17,7 @@ Swisscom:
 
     log:
       logger:
-        backend: TYPO3\Flow\Log\Backend\FileBackend
+        backend: Neos\Flow\Log\Backend\FileBackend
         backendOptions:
           logFileURL: %FLOW_PATH_DATA%Logs/CommunicationDispatcher.log
           createParentDirectories: TRUE

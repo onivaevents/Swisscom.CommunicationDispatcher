@@ -6,7 +6,7 @@ namespace Swisscom\CommunicationDispatcher\Dispatcher;
  */
 
 use Swisscom\CommunicationDispatcher\Channel\ChannelInterface;
-use TYPO3\Flow\Annotations as Flow;
+use Neos\Flow\Annotations as Flow;
 
 /**
  * The factory used to create communication channel instances.

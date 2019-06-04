@@ -7,7 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
 
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Exception;
-use TYPO3\Flow\Annotations as Flow;
+use Neos\Flow\Annotations as Flow;
 
 /**
  * Class VoidChannel for testing purpose
