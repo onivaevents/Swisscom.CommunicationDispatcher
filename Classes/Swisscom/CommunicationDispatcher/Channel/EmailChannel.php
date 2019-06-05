@@ -29,7 +29,7 @@ class EmailChannel implements ChannelInterface
 
     /**
      * @Flow\Inject
-     * @var \TYPO3\SwiftMailer\MailerInterface
+     * @var \Neos\SwiftMailer\MailerInterface
      */
     protected $mailer;
 
@@ -94,7 +94,7 @@ class EmailChannel implements ChannelInterface
                     the queue. Create a Swift Attachment to let Swiftmailer take care of it. */
                     $content = fread($stream, $resource->getFileSize());
                     if ($content !== false) {
-                        $swiftAttachment = \Swift_Attachment::newInstance($content, $resource->getFilename(),
+                        $swiftAttachment = new \Swift_Attachment($content, $resource->getFilename(),
                             $resource->getMediaType());
                         $mail->attach($swiftAttachment);
                     }
