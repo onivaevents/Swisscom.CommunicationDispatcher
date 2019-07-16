@@ -30,6 +30,7 @@ class Notification
 
     /**
      * @var string
+     * @ORM\Column(type="text")
      */
     protected $text = '';
 
