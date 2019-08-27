@@ -100,4 +100,12 @@ class Recipient
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return ($this->email && $this->name) ? $this->name . ' (' . $this->email . ')' : ($this->name ?: $this->email);
+    }
+
 }

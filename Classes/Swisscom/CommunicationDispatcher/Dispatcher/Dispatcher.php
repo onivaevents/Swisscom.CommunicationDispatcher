@@ -14,21 +14,15 @@ class Dispatcher implements DispatcherInterface
 {
 
     /**
-     * @Flow\InjectConfiguration
-     * @var array
-     */
-    protected $settings;
-
-    /**
      * @var ChannelInterface
      */
     protected $channelInterface;
 
     /**
-     * @var \Neos\FluidAdaptor\View\StandaloneView
+     * @var \Swisscom\CommunicationDispatcher\Service\MessageService
      * @Flow\Inject
      */
-    protected $view;
+    protected $messageService;
 
     /**
      * @param ChannelInterface $channelInterface
@@ -49,46 +43,9 @@ class Dispatcher implements DispatcherInterface
      */
     public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $attachedResources = array())
     {
-        if (! empty($this->settings['subjectPrefix'])) {
-            $subject = $this->settings['subjectPrefix'] . ' ' . $subject;
-        }
-        try {
-            $renderedSubject = $this->render($subject, $params);
-        } catch (\Exception $exception) {
-            $renderedSubject = $this->settings['renderingErrorMessage'];
-        }
-        try {
-            $renderedText = $this->render($text, $params);
-        } catch (\Exception $exception) {
-            $renderedText = $this->settings['renderingErrorMessage'];
-        }
-        if (! is_string($renderedSubject)) {
-            $renderedSubject = '';
-        }
-        if (! is_string($renderedText)) {
-            $renderedText = '';
-        }
+        $renderedSubject = $this->messageService->renderSubject($subject, $params);
+        $renderedText = $this->messageService->renderText($text, $params);
+
         $this->channelInterface->send($recipient, $renderedSubject, $renderedText, $attachedResources);
-    }
-
-    /**
-     * @param string $templateSource
-     * @param array $params
-     * @return string
-     */
-    protected function render($templateSource, $params = array())
-    {
-        foreach ($this->settings['templateSourceNamespaces'] as $namespaceKey => $namespaceValue) {
-            $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '}' . $templateSource;
-        }
-        $this->view->setPartialRootPath($this->settings['partialRootPath']);
-        $this->view->setTemplateSource($templateSource);
-
-        $params = array_merge($this->settings['templateViewStaticParameters'], $params);
-        foreach ($params as $key => $value) {
-            $this->view->assign($key, $value);
-        }
-
-        return $this->view->render();
     }
 }
