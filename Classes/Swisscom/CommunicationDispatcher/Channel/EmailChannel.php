@@ -5,6 +5,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
+use Neos\SwiftMailer\Message;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
 use Neos\Flow\Annotations as Flow;
@@ -26,12 +27,6 @@ class EmailChannel implements ChannelInterface
      * @var ResourceManager
      */
     protected $resourceManager;
-
-    /**
-     * @Flow\Inject
-     * @var \Neos\SwiftMailer\MailerInterface
-     */
-    protected $mailer;
 
     /**
      * @var string
@@ -72,7 +67,7 @@ class EmailChannel implements ChannelInterface
         $toName = $recipient->getName();
 
         if (! empty($toEmail)) {
-            $mail = new \Swift_Message();
+            $mail = new Message();
             $mail->setFrom($this->from);
             if (!empty($this->replyTo)) {
                 $mail->setReplyTo($this->replyTo);
@@ -101,7 +96,7 @@ class EmailChannel implements ChannelInterface
                 }
             }
 
-            $acceptedRecipients = $this->mailer->send($mail);
+            $acceptedRecipients = $mail->send();
             if ($acceptedRecipients <= 0) {
                 throw new \Exception();
             }
