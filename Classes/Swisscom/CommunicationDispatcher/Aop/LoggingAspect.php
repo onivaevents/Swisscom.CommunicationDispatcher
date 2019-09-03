@@ -24,6 +24,12 @@ class LoggingAspect
     protected $logger;
 
     /**
+     * @var \Neos\Flow\Log\ThrowableStorageInterface
+     * @Flow\Inject
+     */
+    protected $throwableStorage;
+
+    /**
      * Logs dispatcher calls
      * @Flow\After("within(Swisscom\CommunicationDispatcher\Channel\ChannelInterface) && method(.*->send())")
      * @param JoinPointInterface $joinPoint The current joinpoint
@@ -43,7 +49,8 @@ class LoggingAspect
         }
 
         if ($joinPoint->hasException()) {
-            $this->logger->log($message . ' failed', LOG_ERR);
+            $throwableMessage = $this->throwableStorage->logThrowable($joinPoint->getException());
+            $this->logger->log($message . ' failed', LOG_ERR, ['exception' => $throwableMessage]);
         } else {
             $this->logger->log($message . ' successful', LOG_INFO);
         }
