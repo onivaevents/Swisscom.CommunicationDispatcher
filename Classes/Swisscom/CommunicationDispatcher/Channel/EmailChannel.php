@@ -81,18 +81,18 @@ class EmailChannel implements ChannelInterface
             $text = $this->embedResources($text, $mail);
             $mail->setBody($text, 'text/html', 'utf-8');
             $mail->addPart($plaintext, 'text/plain', 'utf-8');
-            /** @var \Neos\Flow\ResourceManagement\PersistentResource $resource */
             foreach ($attachedResources as $resource) {
-                $stream = $resource->getStream();
-                if ($stream !== false) {
-                    /* Resource createTemporaryLocalCopy() does not work as the file needs to be stored until flushing
-                    the queue. Create a Swift Attachment to let Swiftmailer take care of it. */
-                    $content = fread($stream, $resource->getFileSize());
-                    if ($content !== false) {
-                        $swiftAttachment = new \Swift_Attachment($content, $resource->getFilename(),
-                            $resource->getMediaType());
-                        $mail->attach($swiftAttachment);
+                if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
+                    $stream = $resource->getStream();
+                    if ($stream !== false) {
+                        $content = fread($stream, $resource->getFileSize());
+                        if ($content !== false) {
+                            $swiftAttachment = new \Swift_Attachment($content, $resource->getFilename(), $resource->getMediaType());
+                            $mail->attach($swiftAttachment);
+                        }
                     }
+                } elseif ($resource instanceof \Swift_Attachment) {
+                    $mail->attach($resource);
                 }
             }
 
