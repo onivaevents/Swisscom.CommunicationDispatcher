@@ -5,6 +5,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
+use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\SwiftMailer\Message;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
@@ -83,13 +84,8 @@ class EmailChannel implements ChannelInterface
             $mail->addPart($plaintext, 'text/plain', 'utf-8');
             foreach ($attachedResources as $resource) {
                 if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
-                    $stream = $resource->getStream();
-                    if ($stream !== false) {
-                        $content = fread($stream, $resource->getFileSize());
-                        if ($content !== false) {
-                            $swiftAttachment = new \Swift_Attachment($content, $resource->getFilename(), $resource->getMediaType());
-                            $mail->attach($swiftAttachment);
-                        }
+                    if ($swiftAttachment = self::createSwiftAttachmentFromPersistentResource($resource)) {
+                        $mail->attach($swiftAttachment);
                     }
                 } elseif ($resource instanceof \Swift_Attachment) {
                     $mail->attach($resource);
@@ -101,6 +97,22 @@ class EmailChannel implements ChannelInterface
                 throw new \Exception();
             }
         }
+    }
+
+    /**
+     * @param PersistentResource $resource
+     * @return null|\Swift_Attachment
+     */
+    public static function createSwiftAttachmentFromPersistentResource(PersistentResource $resource)
+    {
+        $stream = $resource->getStream();
+        if ($stream !== false) {
+            $content = fread($stream, $resource->getFileSize());
+            if ($content !== false) {
+                return new \Swift_Attachment($content, $resource->getFilename(), $resource->getMediaType());
+            }
+        }
+        return null;
     }
 
     /**
