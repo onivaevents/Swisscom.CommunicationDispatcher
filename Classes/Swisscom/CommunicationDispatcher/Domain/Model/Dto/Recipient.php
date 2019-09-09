@@ -22,12 +22,12 @@ class Recipient
     /**
      * @var string
      */
-    protected $email;
+    protected $email = '';
 
     /**
      * @var string
      */
-    protected $name;
+    protected $name = '';
 
     /**
      * Recipient constructor.
