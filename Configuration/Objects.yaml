@@ -1,12 +1,9 @@
-Swisscom\CommunicationDispatcher\Log\LoggerInterface:
-  scope: singleton
-  factoryObjectName: Neos\Flow\Log\LoggerFactory
-  arguments:
-    1:
-      value: 'CommunicationDispatcher_Logger'
-    2:
-      value: 'Neos\Flow\Log\Logger'
-    3:
-      setting: Swisscom.CommunicationDispatcher.log.logger.backend
-    4:
-      setting: Swisscom.CommunicationDispatcher.log.logger.backendOptions
+Swisscom\CommunicationDispatcher\Aop\LoggingAspect:
+  properties:
+    logger:
+      object:
+        factoryObjectName: Neos\Flow\Log\PsrLoggerFactoryInterface
+        factoryMethodName: get
+        arguments:
+          1:
+            value: systemLogger

@@ -6,7 +6,6 @@ namespace Swisscom\CommunicationDispatcher\Aop;
  */
 
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use Swisscom\CommunicationDispatcher\Log\LoggerInterface;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Aop\JoinPointInterface;
 
@@ -19,7 +18,7 @@ class LoggingAspect
 
     /**
      * @Flow\Inject
-     * @var LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
@@ -50,9 +49,9 @@ class LoggingAspect
 
         if ($joinPoint->hasException()) {
             $throwableMessage = $this->throwableStorage->logThrowable($joinPoint->getException());
-            $this->logger->log($message . ' failed', LOG_ERR, ['exception' => $throwableMessage]);
+            $this->logger->error($message . ' failed', ['exception' => $throwableMessage]);
         } else {
-            $this->logger->log($message . ' successful', LOG_INFO);
+            $this->logger->info($message . ' successful');
         }
     }
 }
