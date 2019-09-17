@@ -12,8 +12,8 @@
         "Flow"
     ],
     "require": {
-        "typo3/flow": "*",
-        "typo3/media": "*",
+        "neos/flow": "*",
+        "neos/media": "*",
         "neos/swiftmailer": "~7.0"
     },
     "name": "swisscom/communicationdispatcher",
