@@ -41,17 +41,16 @@ class LoggingAspect
         $subject = $joinPoint->getMethodArgument('subject');
         $className = $joinPoint->getClassName();
 
-        if (empty($subject)) {
-            $message = $className . ': Dispatching message to ' . $recipient;
-        } else {
-            $message = $className . ': Dispatching message "' . $subject . '" to ' . $recipient;
+        $context = ['recipient' => $recipient];
+        if (!empty($subject)) {
+            $context['subject'] = $subject;
         }
 
         if ($joinPoint->hasException()) {
-            $throwableMessage = $this->throwableStorage->logThrowable($joinPoint->getException());
-            $this->logger->error($message . ' failed', ['exception' => $throwableMessage]);
+            $context['exception'] = $this->throwableStorage->logThrowable($joinPoint->getException());
+            $this->logger->error($className . ': Dispatching failed', $context);
         } else {
-            $this->logger->info($message . ' successful');
+            $this->logger->info($className . ': Dispatching successful', $context);
         }
     }
 }
