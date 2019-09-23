@@ -19,8 +19,8 @@
     },
     "name": "swisscom/communicationdispatcher",
     "autoload": {
-        "psr-0": {
-            "Swisscom\\CommunicationDispatcher": "Classes/"
+        "psr-4": {
+            "Swisscom\\CommunicationDispatcher\\": "Classes"
         }
     },
     "extra": {
