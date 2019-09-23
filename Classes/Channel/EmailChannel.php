@@ -84,7 +84,7 @@ class EmailChannel implements ChannelInterface
             $mail->addPart($plaintext, 'text/plain', 'utf-8');
             foreach ($attachedResources as $resource) {
                 if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
-                    if ($swiftAttachment = self::createSwiftAttachmentFromPersistentResource($resource)) {
+                    if ($swiftAttachment = $this->createSwiftAttachmentFromPersistentResource($resource)) {
                         $mail->attach($swiftAttachment);
                     }
                 } elseif ($resource instanceof \Swift_Attachment) {
@@ -103,7 +103,7 @@ class EmailChannel implements ChannelInterface
      * @param PersistentResource $resource
      * @return null|\Swift_Attachment
      */
-    public static function createSwiftAttachmentFromPersistentResource(PersistentResource $resource)
+    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource)
     {
         $stream = $resource->getStream();
         if ($stream !== false) {
