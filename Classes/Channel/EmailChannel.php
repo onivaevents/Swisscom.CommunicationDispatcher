@@ -11,6 +11,7 @@ use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\ResourceManagement\ResourceManager;
+use Swisscom\CommunicationDispatcher\Exception;
 
 /**
  * @Flow\Scope("prototype")
@@ -60,42 +61,43 @@ class EmailChannel implements ChannelInterface
      * @param string $text
      * @param array $attachedResources
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function send(Recipient $recipient, $subject, $text, $attachedResources = array())
     {
         $toEmail = $recipient->getEmail();
         $toName = $recipient->getName();
 
-        if (! empty($toEmail)) {
-            $mail = new Message();
-            $mail->setFrom($this->from);
-            if (!empty($this->replyTo)) {
-                $mail->setReplyTo($this->replyTo);
-            }
-            $mail->setTo($toEmail, $toName);
-            if (!empty($this->cc)) {
-                $mail->setCc($this->cc);
-            }
-            $mail->setSubject(htmlspecialchars_decode($subject));
-            $plaintext = preg_replace(array('/\s{2,}/', '/[\t]/', '/###IMAGE:(.+?)###/', '/###PLAIN:(.+?)###/'), ' ', strip_tags($text));
-            $text = $this->embedResources($text, $mail);
-            $mail->setBody($text, 'text/html', 'utf-8');
-            $mail->addPart($plaintext, 'text/plain', 'utf-8');
-            foreach ($attachedResources as $resource) {
-                if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
-                    if ($swiftAttachment = $this->createSwiftAttachmentFromPersistentResource($resource)) {
-                        $mail->attach($swiftAttachment);
-                    }
-                } elseif ($resource instanceof \Swift_Attachment) {
-                    $mail->attach($resource);
+        if (empty($toEmail)) {
+            throw new Exception('Recipient has no email address', 1570541186);
+        }
+        $mail = new Message();
+        $mail->setFrom($this->from);
+        if (!empty($this->replyTo)) {
+            $mail->setReplyTo($this->replyTo);
+        }
+        $mail->setTo($toEmail, $toName);
+        if (!empty($this->cc)) {
+            $mail->setCc($this->cc);
+        }
+        $mail->setSubject(htmlspecialchars_decode($subject));
+        $plaintext = preg_replace(array('/\s{2,}/', '/[\t]/', '/###IMAGE:(.+?)###/', '/###PLAIN:(.+?)###/'), ' ', strip_tags($text));
+        $text = $this->embedResources($text, $mail);
+        $mail->setBody($text, 'text/html', 'utf-8');
+        $mail->addPart($plaintext, 'text/plain', 'utf-8');
+        foreach ($attachedResources as $resource) {
+            if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
+                if ($swiftAttachment = $this->createSwiftAttachmentFromPersistentResource($resource)) {
+                    $mail->attach($swiftAttachment);
                 }
+            } elseif ($resource instanceof \Swift_Attachment) {
+                $mail->attach($resource);
             }
+        }
 
-            $acceptedRecipients = $mail->send();
-            if ($acceptedRecipients <= 0) {
-                throw new \Exception();
-            }
+        $acceptedRecipients = $mail->send();
+        if ($acceptedRecipients <= 0) {
+            throw new Exception('Sending SwiftMessage failed', 1570541189);
         }
     }
 
