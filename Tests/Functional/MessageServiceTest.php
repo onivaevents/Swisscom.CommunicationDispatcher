@@ -10,18 +10,18 @@ use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
 use Neos\Flow\Configuration\ConfigurationManager;
 use Neos\Flow\Tests\FunctionalTestCase;
 use Neos\FluidAdaptor\View\StandaloneView;
+use Swisscom\CommunicationDispatcher\Service\MessageService;
 
 /**
- * Class DispatcherTest
  * @package Swisscom\CommunicationDispatcher\Tests\Functional
  */
-class DispatcherTest extends FunctionalTestCase
+class MessageServiceTest extends FunctionalTestCase
 {
 
     /**
      * @var Dispatcher|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $dispatcher;
+    protected $messageService;
 
     /**
      * @return void
@@ -32,10 +32,10 @@ class DispatcherTest extends FunctionalTestCase
 
         $configurationManager = $this->objectManager->get('Neos\Flow\Configuration\ConfigurationManager');
         $settings = $configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'Swisscom.CommunicationDispatcher');
-        $this->dispatcher = $this->getAccessibleMock(Dispatcher::class, array('dummy'));
+        $this->messageService = $this->getAccessibleMock(MessageService::class, array('dummy'));
         $view = $this->objectManager->get(StandaloneView::class);
-        $this->inject($this->dispatcher, 'settings', $settings);
-        $this->inject($this->dispatcher, 'view', $view);
+        $this->inject($this->messageService, 'settings', $settings);
+        $this->inject($this->messageService, 'view', $view);
     }
 
     /**
@@ -44,7 +44,7 @@ class DispatcherTest extends FunctionalTestCase
     public function dispatcherRendersText()
     {
         $params['event']['title'] = 'Foo';
-        $renderedText = $this->dispatcher->_call('render', '{event.title} bar', $params);
+        $renderedText = $this->messageService->_call('render', '{event.title} bar', $params);
 
         $this->assertSame('Foo bar', $renderedText);
     }
