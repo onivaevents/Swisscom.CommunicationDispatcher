@@ -62,7 +62,7 @@ class MessageService
             $this->view->setPartialRootPath($this->settings['partialRootPath']);
             $this->view->setTemplateSource($templateSource);
 
-            $params = array_merge($this->settings['templateViewStaticParameters'], $params);
+            $params = array_merge_recursive($this->settings['templateViewStaticParameters'], $params);
             foreach ($params as $key => $value) {
                 $this->view->assign($key, $value);
             }
