@@ -103,17 +103,15 @@ class EmailChannel implements ChannelInterface
 
     /**
      * @param PersistentResource $resource
-     * @return null|\Swift_Attachment
+     * @return \Swift_Attachment
      */
     public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource)
     {
-        try {
-            $path = $resource->createTemporaryLocalCopy();
-            $attachment = \Swift_Attachment::fromPath($path, $resource->getMediaType());
-            $attachment->setFilename($resource->getFilename());
-        } catch (\Exception $e) {
-            $attachment = null;
-        }
+        // No exception handling here. This provides flexibility to handle it outside or by aspects
+        $path = $resource->createTemporaryLocalCopy();
+        $attachment = \Swift_Attachment::fromPath($path, $resource->getMediaType());
+        $attachment->setFilename($resource->getFilename());
+
         return $attachment;
     }
 
