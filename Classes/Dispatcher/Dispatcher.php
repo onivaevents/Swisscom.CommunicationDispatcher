@@ -6,9 +6,10 @@ namespace Swisscom\CommunicationDispatcher\Dispatcher;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
+use Neos\Flow\Annotations as Flow;
 use Swisscom\CommunicationDispatcher\Channel\ChannelInterface;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use Neos\Flow\Annotations as Flow;
+use Swisscom\CommunicationDispatcher\Service\MessageService;
 
 class Dispatcher implements DispatcherInterface
 {
@@ -19,7 +20,7 @@ class Dispatcher implements DispatcherInterface
     protected $channelInterface;
 
     /**
-     * @var \Swisscom\CommunicationDispatcher\Service\MessageService
+     * @var MessageService
      * @Flow\Inject
      */
     protected $messageService;
@@ -28,7 +29,7 @@ class Dispatcher implements DispatcherInterface
      * @param ChannelInterface $channelInterface
      * @return void
      */
-    public function setChannelInterface(ChannelInterface $channelInterface = null)
+    public function setChannelInterface(ChannelInterface $channelInterface)
     {
         $this->channelInterface = $channelInterface;
     }
@@ -41,7 +42,7 @@ class Dispatcher implements DispatcherInterface
      * @param array $options
      * @return void
      */
-    public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $options = array())
+    public function dispatch(Recipient $recipient, string $subject, string $text, array $params = [], array $options = [])
     {
         $renderedSubject = $this->messageService->renderSubject($subject, $params);
         $renderedText = $this->messageService->renderText($text, $params);

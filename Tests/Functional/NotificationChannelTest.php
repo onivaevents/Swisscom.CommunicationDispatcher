@@ -6,18 +6,14 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Swisscom\CommunicationDispatcher\Channel\NotificationChannel;
-use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Neos\Flow\Persistence\Doctrine\PersistenceManager;
 use Neos\Flow\Tests\FunctionalTestCase;
 use Neos\Party\Domain\Model\Person;
 use Neos\Party\Domain\Model\PersonName;
 use Neos\Party\Domain\Repository\PartyRepository;
+use Swisscom\CommunicationDispatcher\Channel\NotificationChannel;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 
-/**
- * Class NotificationChannelTest
- * @package Swisscom\CommunicationNotificationChannel\Tests\Functional
- */
 class NotificationChannelTest extends FunctionalTestCase
 {
 

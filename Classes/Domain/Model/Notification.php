@@ -1,12 +1,14 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Domain\Model;
 
 /*
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Neos\Flow\Annotations as Flow;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Neos\Flow\Annotations as Flow;
 use Neos\Party\Domain\Model\Person;
 
 /**
@@ -40,7 +42,7 @@ class Notification
     protected $notified = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $timestamp;
 
@@ -50,9 +52,9 @@ class Notification
      * @param string $subject
      * @param string $text
      */
-    public function __construct(Person $person, $subject, $text)
+    public function __construct(Person $person, string $subject, string $text)
     {
-        $this->timestamp = new \DateTime();
+        $this->timestamp = new DateTime();
         $this->person = $person;
         $this->subject = $subject;
         $this->text = $text;
@@ -61,7 +63,7 @@ class Notification
     /**
      * @return Person
      */
-    public function getPerson()
+    public function getPerson(): Person
     {
         return $this->person;
     }
@@ -69,7 +71,7 @@ class Notification
     /**
      * @return string
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
@@ -77,7 +79,7 @@ class Notification
     /**
      * @return string
      */
-    public function getText()
+    public function getText(): string
     {
         return $this->text;
     }
@@ -85,7 +87,7 @@ class Notification
     /**
      * @return bool
      */
-    public function isNotified()
+    public function isNotified(): bool
     {
         return $this->notified;
     }
@@ -93,15 +95,15 @@ class Notification
     /**
      * @param bool $notified
      */
-    public function setNotified($notified)
+    public function setNotified(bool $notified)
     {
         $this->notified = $notified;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getTimestamp()
+    public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Domain\Repository;
 
 /*
@@ -6,6 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Domain\Repository;
  */
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Persistence\QueryInterface;
 use Neos\Flow\Persistence\Repository;
 
 /**
@@ -18,6 +20,6 @@ class NotificationRepository extends Repository
      * @var array
      */
     protected $defaultOrderings = array(
-        'timestamp' => \Neos\Flow\Persistence\QueryInterface::ORDER_DESCENDING
+        'timestamp' => QueryInterface::ORDER_DESCENDING
     );
 }

@@ -6,20 +6,18 @@ namespace Swisscom\CommunicationDispatcher\Tests\Functional;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
 use Neos\Flow\Configuration\ConfigurationManager;
 use Neos\Flow\Tests\FunctionalTestCase;
 use Neos\FluidAdaptor\View\StandaloneView;
+use PHPUnit\Framework\MockObject\MockObject;
+use Swisscom\CommunicationDispatcher\Dispatcher\Dispatcher;
 use Swisscom\CommunicationDispatcher\Service\MessageService;
 
-/**
- * @package Swisscom\CommunicationDispatcher\Tests\Functional
- */
 class MessageServiceTest extends FunctionalTestCase
 {
 
     /**
-     * @var Dispatcher|\PHPUnit_Framework_MockObject_MockObject
+     * @var Dispatcher|MockObject
      */
     protected $messageService;
 
@@ -30,7 +28,7 @@ class MessageServiceTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $configurationManager = $this->objectManager->get('Neos\Flow\Configuration\ConfigurationManager');
+        $configurationManager = $this->objectManager->get(ConfigurationManager::class);
         $settings = $configurationManager->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_SETTINGS, 'Swisscom.CommunicationDispatcher');
         $this->messageService = $this->getAccessibleMock(MessageService::class, array('dummy'));
         $view = $this->objectManager->get(StandaloneView::class);

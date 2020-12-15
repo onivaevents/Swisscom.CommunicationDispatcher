@@ -1,4 +1,5 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Domain\Model\Dto;
 
 /*
@@ -30,12 +31,11 @@ class Recipient
     protected $name = '';
 
     /**
-     * Recipient constructor.
      * @param Person|null $person
      * @param string $email
      * @param string $name
      */
-    public function __construct(Person $person = null, $email = '', $name = '')
+    public function __construct(?Person $person = null, string $email = '', string $name = '')
     {
         if ($person instanceof Person) {
             $this->person = $person;
@@ -53,17 +53,17 @@ class Recipient
     }
 
     /**
-     * @return Person
+     * @return Person|null
      */
-    public function getPerson()
+    public function getPerson(): ?Person
     {
         return $this->person;
     }
 
     /**
-     * @param Person $person
+     * @param Person|null $person
      */
-    public function setPerson($person)
+    public function setPerson(?Person $person)
     {
         $this->person = $person;
     }

@@ -1,11 +1,14 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Service;
 
 /*
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
+use Exception;
 use Neos\Flow\Annotations as Flow;
+use Neos\FluidAdaptor\View\StandaloneView;
 
 /**
  * @Flow\Scope("singleton")
@@ -20,7 +23,7 @@ class MessageService
     protected $settings;
 
     /**
-     * @var \Neos\FluidAdaptor\View\StandaloneView
+     * @var StandaloneView
      * @Flow\Inject
      */
     protected $view;
@@ -30,22 +33,12 @@ class MessageService
      * @param array $params
      * @return string
      */
-    public function renderSubject($subject, $params = array()) : string
+    public function renderSubject(string $subject, array $params = []): string
     {
-        if (! empty($this->settings['subjectPrefix'])) {
+        if (!empty($this->settings['subjectPrefix'])) {
             $subject = $this->settings['subjectPrefix'] . ' ' . $subject;
         }
         return $this->render($subject, $params);
-    }
-
-    /**
-     * @param string $text
-     * @param array $params
-     * @return string
-     */
-    public function renderText($text, $params = array()) : string
-    {
-        return $this->render($text, $params);
     }
 
     /**
@@ -53,11 +46,11 @@ class MessageService
      * @param array $params
      * @return string
      */
-    protected function render($templateSource, $params) : string
+    protected function render(string $templateSource, array $params): string
     {
         try {
             foreach ($this->settings['templateSourceNamespaces'] as $namespaceKey => $namespaceValue) {
-                $templateSource = '{namespace ' . $namespaceKey . '='  . $namespaceValue . '}' . $templateSource;
+                $templateSource = '{namespace ' . $namespaceKey . '=' . $namespaceValue . '}' . $templateSource;
             }
             $this->view->setPartialRootPath($this->settings['partialRootPath']);
             $this->view->setTemplateSource($templateSource);
@@ -68,10 +61,20 @@ class MessageService
             }
 
             $result = $this->view->render();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $result = $this->settings['renderingErrorMessage'];
         }
 
         return is_string($result) ? $result : '';
+    }
+
+    /**
+     * @param string $text
+     * @param array $params
+     * @return string
+     */
+    public function renderText(string $text, array $params = []): string
+    {
+        return $this->render($text, $params);
     }
 }

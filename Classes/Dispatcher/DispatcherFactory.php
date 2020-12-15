@@ -5,8 +5,8 @@ namespace Swisscom\CommunicationDispatcher\Dispatcher;
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Swisscom\CommunicationDispatcher\Channel\ChannelInterface;
 use Neos\Flow\Annotations as Flow;
+use Swisscom\CommunicationDispatcher\Channel\ChannelInterface;
 
 /**
  * The factory used to create communication channel instances.
@@ -27,7 +27,7 @@ class DispatcherFactory
      * @param array $channelOptions
      * @return DispatcherInterface
      */
-    public function create($identifier, array $channelOptions = [])
+    public function create(string $identifier, array $channelOptions = []): DispatcherInterface
     {
         $configuration = $this->dispatcherConfigurations[$identifier];
         $objectName = $configuration['objectName'];

@@ -1,13 +1,16 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Aop;
 
 /*
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Aop\JoinPointInterface;
+use Neos\Flow\Log\ThrowableStorageInterface;
+use Psr\Log\LoggerInterface;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 
 /**
  * @Flow\Scope("singleton")
@@ -18,18 +21,19 @@ class LoggingAspect
 
     /**
      * @Flow\Inject
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * @var \Neos\Flow\Log\ThrowableStorageInterface
+     * @var ThrowableStorageInterface
      * @Flow\Inject
      */
     protected $throwableStorage;
 
     /**
      * Logs dispatcher calls
+     *
      * @Flow\After("within(Swisscom\CommunicationDispatcher\Channel\ChannelInterface) && method(.*->send())")
      * @param JoinPointInterface $joinPoint The current joinpoint
      * @return void

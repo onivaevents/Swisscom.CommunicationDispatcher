@@ -1,16 +1,19 @@
 <?php
+
 namespace Swisscom\CommunicationDispatcher\Channel;
 
 /*
  * This file is part of the Swisscom.CommunicationDispatcher package.
  */
 
-use Neos\Flow\ResourceManagement\PersistentResource;
-use Neos\SwiftMailer\Message;
-use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use Swisscom\CommunicationDispatcher\Domain\Repository\AssetRepository;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\SwiftMailer\Message;
+use Swift_Attachment;
+use Swift_Image;
+use Swift_Message;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Exception;
 
 /**
@@ -18,11 +21,6 @@ use Swisscom\CommunicationDispatcher\Exception;
  */
 class EmailChannel implements ChannelInterface
 {
-    /**
-     * @Flow\Inject
-     * @var AssetRepository
-     */
-    protected $assetRepository;
 
     /**
      * @Flow\Inject
@@ -63,7 +61,7 @@ class EmailChannel implements ChannelInterface
      * @return void
      * @throws Exception
      */
-    public function send(Recipient $recipient, $subject, $text, $options = array())
+    public function send(Recipient $recipient, string $subject, string $text, array $options = [])
     {
         $toEmail = $recipient->getEmail();
         $toName = $recipient->getName();
@@ -87,11 +85,11 @@ class EmailChannel implements ChannelInterface
         $mail->setBody($text, 'text/html', 'utf-8');
         $mail->addPart($plaintext, 'text/plain', 'utf-8');
         foreach ($attachedResources as $resource) {
-            if ($resource instanceof \Neos\Flow\ResourceManagement\PersistentResource) {
+            if ($resource instanceof PersistentResource) {
                 if ($swiftAttachment = $this->createSwiftAttachmentFromPersistentResource($resource)) {
                     $mail->attach($swiftAttachment);
                 }
-            } elseif ($resource instanceof \Swift_Attachment) {
+            } elseif ($resource instanceof Swift_Attachment) {
                 $mail->attach($resource);
             }
         }
@@ -103,29 +101,14 @@ class EmailChannel implements ChannelInterface
     }
 
     /**
-     * @param PersistentResource $resource
-     * @return \Swift_Attachment
-     */
-    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource)
-    {
-        // No exception handling here. This provides flexibility to handle it outside or by aspects
-        $path = $resource->createTemporaryLocalCopy();
-        $attachment = \Swift_Attachment::fromPath($path, $resource->getMediaType());
-        $attachment->setFilename($resource->getFilename());
-
-        return $attachment;
-    }
-
-    /**
      * Embed images. I.e:
      * <img height="40px" src="###IMAGE:'{template.logo}'###" alt="Logo"/>
      *
-     * @param $html
-     * @param \Swift_Message $mail
-     *
+     * @param string $html
+     * @param Swift_Message $mail
      * @return string $html
      */
-    private function embedResources($html, &$mail)
+    private function embedResources(string $html, Swift_Message &$mail): string
     {
         $html = preg_replace_callback('/###IMAGE:(.+?)###/', function ($matches) use ($mail) {
             return $this->embedImageResourceCallback($matches, $mail);
@@ -139,17 +122,16 @@ class EmailChannel implements ChannelInterface
 
     /**
      * @param array $matches
-     * @param \Swift_Message $mail $mail
-     *
+     * @param \Swift_Message $mail
      * @return string
      */
-    private function embedImageResourceCallback($matches, &$mail)
+    private function embedImageResourceCallback(array $matches, Swift_Message &$mail): string
     {
         $cid = '';
         if (isset($matches[1])) {
             $source = trim($matches[1], '\'');
             try {
-                $cid = $mail->embed(\Swift_Image::fromPath($source));
+                $cid = $mail->embed(Swift_Image::fromPath($source));
             } catch (\Exception $e) {
                 // Nothing to do here
             }
@@ -159,10 +141,9 @@ class EmailChannel implements ChannelInterface
 
     /**
      * @param array $matches
-     *
      * @return string
      */
-    private function embedPlainResourceCallback($matches)
+    private function embedPlainResourceCallback(array $matches): string
     {
         $plain = '';
         if (isset($matches[1])) {
@@ -174,5 +155,19 @@ class EmailChannel implements ChannelInterface
             }
         }
         return $plain;
+    }
+
+    /**
+     * @param PersistentResource $resource
+     * @return Swift_Attachment
+     */
+    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource): Swift_Attachment
+    {
+        // No exception handling here. This provides flexibility to handle it outside or by aspects
+        $path = $resource->createTemporaryLocalCopy();
+        $attachment = Swift_Attachment::fromPath($path, $resource->getMediaType());
+        $attachment->setFilename($resource->getFilename());
+
+        return $attachment;
     }
 }

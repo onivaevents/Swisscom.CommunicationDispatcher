@@ -7,11 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
  */
 
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use Neos\Flow\Annotations as Flow;
 
-/**
- * Channel interface
- */
 interface ChannelInterface
 {
 
@@ -22,5 +18,5 @@ interface ChannelInterface
      * @param array $options
      * @return void
      */
-    public function send(Recipient $recipient, $subject, $text, $options = array());
+    public function send(Recipient $recipient, string $subject, string $text, array $options = []);
 }
