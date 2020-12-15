@@ -27,8 +27,8 @@ interface DispatcherInterface
      * @param string $subject
      * @param string $text
      * @param array $params
-     * @param array $attachedResources
+     * @param array $options
      * @return void
      */
-    public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $attachedResources = array());
+    public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $options = array());
 }

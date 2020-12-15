@@ -19,8 +19,8 @@ interface ChannelInterface
      * @param Recipient $recipient
      * @param string $subject
      * @param string $text
-     * @param array $attachedResources
+     * @param array $options
      * @return void
      */
-    public function send(Recipient $recipient, $subject, $text, $attachedResources = array());
+    public function send(Recipient $recipient, $subject, $text, $options = array());
 }

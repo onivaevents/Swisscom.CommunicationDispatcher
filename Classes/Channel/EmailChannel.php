@@ -59,14 +59,15 @@ class EmailChannel implements ChannelInterface
      * @param Recipient $recipient
      * @param string $subject
      * @param string $text
-     * @param array $attachedResources
+     * @param array $options
      * @return void
      * @throws Exception
      */
-    public function send(Recipient $recipient, $subject, $text, $attachedResources = array())
+    public function send(Recipient $recipient, $subject, $text, $options = array())
     {
         $toEmail = $recipient->getEmail();
         $toName = $recipient->getName();
+        $attachedResources = $options['attachedResources'] ?? [];
 
         if (empty($toEmail)) {
             throw new Exception('Recipient has no email address', 1570541186);

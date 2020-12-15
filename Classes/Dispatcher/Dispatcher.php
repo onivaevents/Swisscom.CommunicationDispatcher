@@ -38,14 +38,14 @@ class Dispatcher implements DispatcherInterface
      * @param string $subject
      * @param string $text
      * @param array $params
-     * @param array $attachedResources
+     * @param array $options
      * @return void
      */
-    public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $attachedResources = array())
+    public function dispatch(Recipient $recipient, $subject, $text, $params = array(), $options = array())
     {
         $renderedSubject = $this->messageService->renderSubject($subject, $params);
         $renderedText = $this->messageService->renderText($text, $params);
 
-        $this->channelInterface->send($recipient, $renderedSubject, $renderedText, $attachedResources);
+        $this->channelInterface->send($recipient, $renderedSubject, $renderedText, $options);
     }
 }
