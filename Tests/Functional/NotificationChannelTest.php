@@ -52,5 +52,7 @@ class NotificationChannelTest extends FunctionalTestCase
         $this->notificationChannel->send($recipient, 'Subject', 'Text');
 
         $this->assertEquals(true, $this->persistenceManager->hasUnpersistedChanges());
+
+        $this->persistenceManager->clearState();
     }
 }
