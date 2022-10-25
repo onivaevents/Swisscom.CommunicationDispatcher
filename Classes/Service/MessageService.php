@@ -8,7 +8,9 @@ namespace Swisscom\CommunicationDispatcher\Service;
 
 use Exception;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Log\ThrowableStorageInterface;
 use Neos\FluidAdaptor\View\StandaloneView;
+use Psr\Log\LoggerInterface;
 
 /**
  * @Flow\Scope("singleton")
@@ -27,6 +29,18 @@ class MessageService
      * @Flow\Inject
      */
     protected $view;
+
+    /**
+     * @Flow\Inject
+     * @var ThrowableStorageInterface
+     */
+    protected $throwableStorage;
+
+    /**
+     * @Flow\Inject
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * @param string $subject
@@ -63,6 +77,8 @@ class MessageService
             $result = $this->view->render();
         } catch (Exception $exception) {
             $result = $this->settings['renderingErrorMessage'];
+            $message = $this->throwableStorage->logThrowable($exception);
+            $this->logger->error('Message template rendering failed with exception: ' . $message);
         }
 
         return is_string($result) ? $result : '';
