@@ -7,6 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
  */
 
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\ResourceManagement\Exception as ResourceException;
 use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\SwiftMailer\Message;
@@ -157,12 +158,13 @@ class EmailChannel implements ChannelInterface
         return $plain;
     }
 
-    /**
-     * @param PersistentResource $resource
-     * @return Swift_Attachment
-     */
-    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource): Swift_Attachment
+    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource): ?Swift_Attachment
     {
+        if (!is_string($resource->getSha1())) {
+            // Throw exception to prevent type error on getCacheEntryIdentifier(): "Return value must be of type string, null returned"
+            throw new ResourceException('No sha1 set in persistent resource', 1733826832);
+        }
+
         // No exception handling here. This provides flexibility to handle it outside or by aspects
         $path = $resource->createTemporaryLocalCopy();
         $attachment = Swift_Attachment::fromPath($path, $resource->getMediaType());
