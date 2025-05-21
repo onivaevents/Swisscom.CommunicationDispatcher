@@ -13,7 +13,7 @@
         "Flow"
     ],
     "require": {
-        "neos/flow": "^7.0",
+        "neos/flow": "^7.0 || ^8.0",
         "neos/media": "*",
         "neos/swiftmailer": "~7.0"
     },
