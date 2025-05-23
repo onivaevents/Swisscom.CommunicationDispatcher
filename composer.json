@@ -13,7 +13,7 @@
         "Flow"
     ],
     "require": {
-        "neos/flow": "^7.0",
+        "neos/flow": "^7.0 || ^8.0",
         "neos/media": "*",
         "neos/swiftmailer": "~7.0"
     },
@@ -75,7 +75,9 @@
             "Neos.Flow-20201003165200",
             "Neos.Flow-20201109224100",
             "Neos.Flow-20201205172733",
-            "Neos.Flow-20201207104500"
+            "Neos.Flow-20201207104500",
+            "Neos.Flow-20220318174300",
+            "Neos.Fusion-20220326120900"
         ]
     }
 }
