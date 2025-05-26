@@ -83,6 +83,10 @@ class EmailChannel implements ChannelInterface
         $mail->setSubject(htmlspecialchars_decode($subject));
         $plaintext = preg_replace(array('/\s{2,}/', '/[\t]/', '/###IMAGE:(.+?)###/', '/###PLAIN:(.+?)###/'), ' ', strip_tags($text));
         $text = $this->embedResources($text, $mail);
+
+        $text = $this->formatInternetMessage($text);
+        $plaintext = $this->formatInternetMessage($plaintext);
+
         $mail->setBody($text, 'text/html', 'utf-8');
         $mail->addPart($plaintext, 'text/plain', 'utf-8');
         foreach ($attachedResources as $resource) {
@@ -156,6 +160,24 @@ class EmailChannel implements ChannelInterface
             }
         }
         return $plain;
+    }
+
+    /**
+     * Format according to https://datatracker.ietf.org/doc/html/rfc5322#section-2.1.1
+     */
+    private function formatInternetMessage(string $text): string
+    {
+        // Break the text into lines with a maximum of 78 characters
+        $text = wordwrap($text, 78, PHP_EOL, true);
+
+        // Ensure no line or continuous sequence exceeds 998 characters
+        $lines = explode(PHP_EOL, $text);
+        foreach ($lines as &$line) {
+            if (strlen($line) > 998) {
+                $line = chunk_split($line, 998, PHP_EOL);
+            }
+        }
+        return implode(PHP_EOL, $lines);
     }
 
     public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource): ?Swift_Attachment
