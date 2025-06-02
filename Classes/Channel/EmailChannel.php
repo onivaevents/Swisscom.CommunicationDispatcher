@@ -10,18 +10,24 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\ResourceManagement\Exception as ResourceException;
 use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\Flow\ResourceManagement\ResourceManager;
-use Neos\SwiftMailer\Message;
-use Swift_Attachment;
-use Swift_Image;
-use Swift_Message;
+use Neos\SymfonyMailer\Exception\InvalidMailerConfigurationException;
+use Neos\SymfonyMailer\Service\MailerService;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Exception;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 /**
  * @Flow\Scope("prototype")
  */
 class EmailChannel implements ChannelInterface
 {
+    /**
+     * @Flow\Inject
+     * @var MailerService
+     */
+    protected $mailerService;
 
     /**
      * @Flow\Inject
@@ -30,17 +36,17 @@ class EmailChannel implements ChannelInterface
     protected $resourceManager;
 
     /**
-     * @var string
+     * @var array<string, string>
      */
     protected $from;
 
     /**
-     * @var string
+     * @var array<string, string>
      */
     protected $replyTo;
 
     /**
-     * @var string
+     * @var array<string, string>
      */
     protected $cc;
 
@@ -49,9 +55,9 @@ class EmailChannel implements ChannelInterface
      */
     function __construct(array $options = [])
     {
-        $this->from = isset($options['from']) ? $options['from'] : '';
-        $this->replyTo = isset($options['replyTo']) ? $options['replyTo'] : '';
-        $this->cc = isset($options['cc']) ? $options['cc'] : '';
+        $this->from = $options['from'] ?? '';
+        $this->replyTo = $options['replyTo'] ?? '';
+        $this->cc = $options['cc'] ?? '';
     }
 
     /**
@@ -61,105 +67,54 @@ class EmailChannel implements ChannelInterface
      * @param array $options
      * @return void
      * @throws Exception
+     * @throws ResourceException
+     * @throws InvalidMailerConfigurationException
+     * @throws TransportExceptionInterface
      */
     public function send(Recipient $recipient, string $subject, string $text, array $options = [])
     {
         $toEmail = $recipient->getEmail();
         $toName = $recipient->getName();
-        $attachedResources = $options['attachedResources'] ?? [];
+        $attachedResources = isset($options['attachedResources']) && is_array($options['attachedResources'])
+            ? $options['attachedResources']
+            : [];
 
         if (empty($toEmail)) {
             throw new Exception('Recipient has no email address', 1570541186);
         }
-        $mail = new Message();
-        $mail->setFrom($this->from);
+
+        $email = new Email();
+        $email
+            ->from($this->arrayToAddress($this->from))
+            ->subject($subject);
+
         if (!empty($this->replyTo)) {
-            $mail->setReplyTo($this->replyTo);
+            $email->replyTo($this->arrayToAddress($this->replyTo));
         }
-        $mail->setTo($toEmail, $toName);
+        $email->to(new Address($toEmail, $toName));
         if (!empty($this->cc)) {
-            $mail->setCc($this->cc);
+            $email->cc($this->arrayToAddress($this->cc));
         }
-        $mail->setSubject(htmlspecialchars_decode($subject));
-        $plaintext = preg_replace(array('/\s{2,}/', '/[\t]/', '/###IMAGE:(.+?)###/', '/###PLAIN:(.+?)###/'), ' ', strip_tags($text));
-        $text = $this->embedResources($text, $mail);
+        $email->subject(htmlspecialchars_decode($subject));
 
-        $text = $this->formatInternetMessage($text);
-        $plaintext = $this->formatInternetMessage($plaintext);
+        $html = $this->formatInternetMessage($text);
+        $text = $this->formatInternetMessage(strip_tags($text));
 
-        $mail->setBody($text, 'text/html', 'utf-8');
-        $mail->addPart($plaintext, 'text/plain', 'utf-8');
-        foreach ($attachedResources as $resource) {
+        $email->html($html);
+        $email->text($text);
+
+        foreach ($attachedResources as $name => $resource) {
             if ($resource instanceof PersistentResource) {
-                if ($swiftAttachment = $this->createSwiftAttachmentFromPersistentResource($resource)) {
-                    $mail->attach($swiftAttachment);
+                if ($path = $this->getPathFromPersistentResource($resource)) {
+                    $email->attachFromPath($path, $resource->getFilename(), $resource->getMediaType());
                 }
-            } elseif ($resource instanceof Swift_Attachment) {
-                $mail->attach($resource);
+            } elseif (is_string($resource) && is_string($name)) {
+                $email->attach($resource,  $name, 'text/plain');
             }
         }
 
-        $acceptedRecipients = $mail->send();
-        if ($acceptedRecipients <= 0) {
-            throw new Exception('Sending SwiftMessage failed', 1570541189);
-        }
-    }
-
-    /**
-     * Embed images. I.e:
-     * <img height="40px" src="###IMAGE:'{template.logo}'###" alt="Logo"/>
-     *
-     * @param string $html
-     * @param Swift_Message $mail
-     * @return string $html
-     */
-    private function embedResources(string $html, Swift_Message &$mail): string
-    {
-        $html = preg_replace_callback('/###IMAGE:(.+?)###/', function ($matches) use ($mail) {
-            return $this->embedImageResourceCallback($matches, $mail);
-        }, $html);
-        $html = preg_replace_callback('/###PLAIN:(.+?)###/', function ($matches) use ($mail) {
-            return $this->embedPlainResourceCallback($matches);
-        }, $html);
-
-        return $html;
-    }
-
-    /**
-     * @param array $matches
-     * @param \Swift_Message $mail
-     * @return string
-     */
-    private function embedImageResourceCallback(array $matches, Swift_Message &$mail): string
-    {
-        $cid = '';
-        if (isset($matches[1])) {
-            $source = trim($matches[1], '\'');
-            try {
-                $cid = $mail->embed(Swift_Image::fromPath($source));
-            } catch (\Exception $e) {
-                // Nothing to do here
-            }
-        }
-        return $cid;
-    }
-
-    /**
-     * @param array $matches
-     * @return string
-     */
-    private function embedPlainResourceCallback(array $matches): string
-    {
-        $plain = '';
-        if (isset($matches[1])) {
-            $source = trim($matches[1], '\'');
-            try {
-                $plain = file_get_contents($source);
-            } catch (\Exception $e) {
-                // Nothing to do here
-            }
-        }
-        return $plain;
+        $mailer = $this->mailerService->getMailer();
+        $mailer->send($email);
     }
 
     /**
@@ -180,7 +135,7 @@ class EmailChannel implements ChannelInterface
         return implode(PHP_EOL, $lines);
     }
 
-    public function createSwiftAttachmentFromPersistentResource(PersistentResource $resource): ?Swift_Attachment
+    public function getPathFromPersistentResource(PersistentResource $resource): ?string
     {
         if (!is_string($resource->getSha1())) {
             // Throw exception to prevent type error on getCacheEntryIdentifier(): "Return value must be of type string, null returned"
@@ -188,10 +143,16 @@ class EmailChannel implements ChannelInterface
         }
 
         // No exception handling here. This provides flexibility to handle it outside or by aspects
-        $path = $resource->createTemporaryLocalCopy();
-        $attachment = Swift_Attachment::fromPath($path, $resource->getMediaType());
-        $attachment->setFilename($resource->getFilename());
+        return $resource->createTemporaryLocalCopy();
+    }
 
-        return $attachment;
+    /**
+     * @param array<string, string> $array
+     */
+    protected function arrayToAddress(array $array): Address
+    {
+        $email = (string)array_key_first($array);
+
+        return new Address($email, $array[$email]);
     }
 }

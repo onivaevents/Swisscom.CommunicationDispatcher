@@ -14,7 +14,7 @@
     ],
     "require": {
         "neos/flow": "^7.0 || ^8.0",
-        "neos/swiftmailer": "~7.0"
+        "neos/symfonymailer": "^0.1"
     },
     "name": "swisscom/communicationdispatcher",
     "autoload": {
@@ -60,7 +60,6 @@
             "Neos.Media-20161219094126",
             "Neos.Flow-20170125103800",
             "Neos.Flow-20170127183102",
-            "Neos.SwiftMailer-20161130105617",
             "TYPO3.TYPO3CR-130523180140",
             "TYPO3.TYPO3CR-140911160326",
             "TYPO3.TYPO3CR-141101082142",
