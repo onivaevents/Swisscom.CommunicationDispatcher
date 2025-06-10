@@ -15,6 +15,7 @@ use Neos\SymfonyMailer\Service\MailerService;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Exception;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
@@ -36,6 +37,11 @@ class EmailChannel implements ChannelInterface
     protected $resourceManager;
 
     /**
+     * @var string|null
+     */
+    protected $transport;
+
+    /**
      * @var array<string, string>
      */
     protected $from;
@@ -55,6 +61,7 @@ class EmailChannel implements ChannelInterface
      */
     function __construct(array $options = [])
     {
+        $this->transport = $options['transport'] ?? null;
         $this->from = $options['from'] ?? '';
         $this->replyTo = $options['replyTo'] ?? '';
         $this->cc = $options['cc'] ?? '';
@@ -113,7 +120,12 @@ class EmailChannel implements ChannelInterface
             }
         }
 
-        $mailer = $this->mailerService->getMailer();
+        $transport = null;
+        if ($this->transport !== null) {
+            $transport = Transport::fromDsn($this->transport);
+        }
+
+        $mailer = $this->mailerService->getMailer($transport);
         $mailer->send($email);
     }
 
