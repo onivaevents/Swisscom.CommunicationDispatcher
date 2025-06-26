@@ -104,11 +104,8 @@ class EmailChannel implements ChannelInterface
         }
         $email->subject(htmlspecialchars_decode($subject));
 
-        $html = $this->formatInternetMessage($text);
-        $text = $this->formatInternetMessage(strip_tags($text));
-
-        $email->html($html);
-        $email->text($text);
+        $email->html($text);
+        $email->text(strip_tags($text));
 
         foreach ($attachedResources as $name => $resource) {
             if ($resource instanceof PersistentResource) {
@@ -127,24 +124,6 @@ class EmailChannel implements ChannelInterface
 
         $mailer = $this->mailerService->getMailer($transport);
         $mailer->send($email);
-    }
-
-    /**
-     * Format according to https://datatracker.ietf.org/doc/html/rfc5322#section-2.1.1
-     */
-    private function formatInternetMessage(string $text): string
-    {
-        // Break the text into lines with a maximum of 78 characters
-        $text = wordwrap($text, 78, PHP_EOL, true);
-
-        // Ensure no line or continuous sequence exceeds 998 characters
-        $lines = explode(PHP_EOL, $text);
-        foreach ($lines as &$line) {
-            if (strlen($line) > 998) {
-                $line = chunk_split($line, 998, PHP_EOL);
-            }
-        }
-        return implode(PHP_EOL, $lines);
     }
 
     public function getPathFromPersistentResource(PersistentResource $resource): ?string
