@@ -12,6 +12,7 @@ use Neos\Flow\ResourceManagement\PersistentResource;
 use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\SymfonyMailer\Exception\InvalidMailerConfigurationException;
 use Neos\SymfonyMailer\Service\MailerService;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
 use Swisscom\CommunicationDispatcher\Exception;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -35,6 +36,11 @@ class EmailChannel implements ChannelInterface
      * @var ResourceManager
      */
     protected $resourceManager;
+
+    /**
+     * @var EventDispatcherInterface|null
+     */
+    protected $eventDispatcher = null;
 
     /**
      * @var string|null
@@ -119,11 +125,16 @@ class EmailChannel implements ChannelInterface
 
         $transport = null;
         if ($this->transport !== null) {
-            $transport = Transport::fromDsn($this->transport);
+            $transport = Transport::fromDsn($this->transport, $this->eventDispatcher);
         }
 
-        $mailer = $this->mailerService->getMailer($transport);
+        $mailer = $this->mailerService->getMailer($transport, $this->eventDispatcher);
         $mailer->send($email);
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function getPathFromPersistentResource(PersistentResource $resource): ?string
