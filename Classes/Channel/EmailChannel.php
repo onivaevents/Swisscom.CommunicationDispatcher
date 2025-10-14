@@ -13,8 +13,10 @@ use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\SymfonyMailer\Exception\InvalidMailerConfigurationException;
 use Neos\SymfonyMailer\Service\MailerService;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\SendResult;
 use Swisscom\CommunicationDispatcher\Exception;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -72,13 +74,13 @@ class EmailChannel implements ChannelInterface
      * @param string $subject
      * @param string $text
      * @param array $options
-     * @return void
+     * @return SendResult|null
      * @throws Exception
      * @throws ResourceException
      * @throws InvalidMailerConfigurationException
      * @throws TransportExceptionInterface
      */
-    public function send(Recipient $recipient, string $subject, string $text, array $options = [])
+    public function send(Recipient $recipient, string $subject, string $text, array $options = []): ?SendResult
     {
         $toEmail = $recipient->getEmail();
         $toName = $recipient->getName();
@@ -120,10 +122,14 @@ class EmailChannel implements ChannelInterface
         $transport = null;
         if ($this->transport !== null) {
             $transport = Transport::fromDsn($this->transport);
+            $sentMessage = $transport->send($email);
+            return $this->extractSendMetadata($sentMessage);
         }
 
         $mailer = $this->mailerService->getMailer($transport);
         $mailer->send($email);
+
+        return null;
     }
 
     public function getPathFromPersistentResource(PersistentResource $resource): ?string
@@ -145,5 +151,14 @@ class EmailChannel implements ChannelInterface
         $email = (string)array_key_first($array);
 
         return new Address($email, $array[$email]);
+    }
+
+    protected function extractSendMetadata(?SentMessage $sentMessage): ?SendResult
+    {
+        if ($sentMessage === null) {
+            return null;
+        }
+
+        return new SendResult($sentMessage->getMessageId());
     }
 }

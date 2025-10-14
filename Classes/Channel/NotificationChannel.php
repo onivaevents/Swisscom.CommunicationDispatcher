@@ -9,6 +9,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
 use Neos\Flow\Annotations as Flow;
 use Neos\Party\Domain\Model\Person;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\SendResult;
 use Swisscom\CommunicationDispatcher\Domain\Model\Notification;
 use Swisscom\CommunicationDispatcher\Domain\Repository\NotificationRepository;
 use Swisscom\CommunicationDispatcher\Exception;
@@ -27,13 +28,15 @@ class NotificationChannel implements ChannelInterface
      * @param string $subject
      * @param string $text
      * @param array $options
+     * @return SendResult|null
      * @throws Exception
      */
-    public function send(Recipient $recipient, string $subject, string $text, array $options = [])
+    public function send(Recipient $recipient, string $subject, string $text, array $options = []): ?SendResult
     {
         if ($recipient->getPerson() instanceof Person) {
             $newNotification = $this->createNotification($recipient, $subject, $text);
             $this->notificationRepository->add($newNotification);
+            return null;
         } else {
             throw new Exception('Notification expects the recipient to have a Person.', 1513086601);
         }

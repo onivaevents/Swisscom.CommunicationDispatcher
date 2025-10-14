@@ -7,7 +7,7 @@ namespace Swisscom\CommunicationDispatcher\Channel;
  */
 
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
-use Swisscom\CommunicationDispatcher\Exception;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\SendResult;
 
 class VoidChannel implements ChannelInterface
 {
@@ -17,9 +17,10 @@ class VoidChannel implements ChannelInterface
      * @param string $subject
      * @param string $text
      * @param array $options
-     * @throws Exception
+     * @return SendResult|null
      */
-    public function send(Recipient $recipient, string $subject, string $text, array $options = [])
+    public function send(Recipient $recipient, string $subject, string $text, array $options = []): ?SendResult
     {
+        return null;
     }
 }

@@ -11,6 +11,7 @@ use Neos\Flow\Aop\JoinPointInterface;
 use Neos\Flow\Log\ThrowableStorageInterface;
 use Psr\Log\LoggerInterface;
 use Swisscom\CommunicationDispatcher\Domain\Model\Dto\Recipient;
+use Swisscom\CommunicationDispatcher\Domain\Model\Dto\SendResult;
 
 /**
  * @Flow\Scope("singleton")
@@ -48,6 +49,12 @@ class LoggingAspect
         $context = ['recipient' => $recipient];
         if (!empty($subject)) {
             $context['subject'] = $subject;
+        }
+
+        /** @var SendResult|null $sendResult */
+        $sendResult = $joinPoint->getResult();
+        if ($sendResult !== null) {
+            $context['sendResult'] = $sendResult->toArray();
         }
 
         if ($joinPoint->hasException()) {
